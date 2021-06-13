@@ -1,7 +1,7 @@
 # Личный проект «Readme»
 
 * Студент: [Алексей Зубарев](https://up.htmlacademy.ru/php/12/user/6616).
-* Наставник: `Неизвестно`.
+* Наставник: [Олег Мифле](https://htmlacademy.ru/profile/id496565).
 
 ---
 
