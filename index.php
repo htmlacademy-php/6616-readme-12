@@ -239,47 +239,52 @@ $popular_posts = [
             </div>
         </div>
         <div class="popular__posts">
-            <?php foreach ($popular_posts as $key => $val): ?>
-                <article class="popular__post post <?=$val['type'];?>">
+            <?php foreach ($popular_posts as $key => $value): ?>
+                <article class="popular__post post <?=$value['type'];?>">
                     <header class="post__header">
-                        <h2><?=$val['title'];?></h2>
+                        <h2><?=$value['title'];?></h2>
                     </header>
                     <div class="post__main">
-                        <?php if($val['type'] === 'post-text'): ?>
-                            <p><?=$val['content'];?></p>
-                        <?php elseif($val['type'] === 'post-quote'): ?>
-                            <blockquote>
-                                <p><?=$val['content'];?></p>
-                                <cite>Неизвестный Автор</cite>
-                            </blockquote>
-                        <?php elseif($val['type'] === 'post-photo'): ?>
-                            <div class="post-photo__image-wrapper">
-                                <img src="img/<?=$val['content'];?>" alt="Фото от пользователя" width="360" height="240">
-                            </div>
-                        <?php elseif($val['type'] === 'post-link'): ?>
-                            <div class="post-link__wrapper">
-                                <a class="post-link__external" href="https://<?=$val['content'];?>" title="Перейти по ссылке">
-                                    <div class="post-link__info-wrapper">
-                                        <div class="post-link__icon-wrapper">
-                                            <img src="https://www.google.com/s2/favicons?domain=vitadental.ru" alt="Иконка">
+                        <?php switch ($value[ 'type' ]):
+                            case 'post-text': ?>
+                                <p><?=$value['content'];?></p>
+                                <?php break;
+                            case 'post-quote': ?>
+                                <blockquote>
+                                    <p><?=$value['content'];?></p>
+                                    <cite>Неизвестный Автор</cite>
+                                </blockquote>
+                                <?php break;
+                            case 'post-photo': ?>
+                                <div class="post-photo__image-wrapper">
+                                    <img src="img/<?=$value['content'];?>" alt="Фото от пользователя" width="360" height="240">
+                                </div>
+                                <?php break;
+                            case 'post-link': ?>
+                                <div class="post-link__wrapper">
+                                    <a class="post-link__external" href="https://<?=$value['content'];?>" title="Перейти по ссылке">
+                                        <div class="post-link__info-wrapper">
+                                            <div class="post-link__icon-wrapper">
+                                                <img src="https://www.google.com/s2/favicons?domain=vitadental.ru" alt="Иконка">
+                                            </div>
+                                            <div class="post-link__info">
+                                                <h3><?=$value['title'];?></h3>
+                                            </div>
                                         </div>
-                                        <div class="post-link__info">
-                                            <h3><?=$val['title'];?></h3>
-                                        </div>
-                                    </div>
-                                    <span><?=$val['content'];?></span>
-                                </a>
-                            </div>
-                        <?php endif; ?>
+                                        <span><?=$value['content'];?></span>
+                                    </a>
+                                </div>
+                                <?php break;
+                        endswitch; ?>
                     </div>
                     <footer class="post__footer">
                         <div class="post__author">
                             <a class="post__author-link" href="#" title="Автор">
                                 <div class="post__avatar-wrapper">
-                                    <img class="post__author-avatar" src="img/<?=$val['avatar'];?>" alt="Аватар пользователя">
+                                    <img class="post__author-avatar" src="img/<?=$value['avatar'];?>" alt="Аватар пользователя">
                                 </div>
                                 <div class="post__info">
-                                    <b class="post__author-name"><?=$val['username'];?></b>
+                                    <b class="post__author-name"><?=$value['username'];?></b>
                                     <time class="post__time" datetime="">дата</time>
                                 </div>
                             </a>
