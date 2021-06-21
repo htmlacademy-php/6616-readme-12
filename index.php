@@ -39,6 +39,35 @@ $popular_posts = [
         'avatar' => 'userpic.jpg',
     ],
 ];
+
+/**
+ * Урезает оригинальный текст, если его длина меньше заданного числа символов
+ *
+ * @param string $content Оригинальный текст
+ * @param int $length_limit Лимит на число символов
+ *
+ * @return string Возвращается либо урезанный текст с ссылкой, либо оригинальный
+ */
+function trim_content(string $content, int $length_limit = 300): string
+{
+    $more_link = '<a class="post-text__more-link" href="#">Читать далее</a>';
+    $content_words = explode(' ', $content);
+    $content_length = 0;
+    $trimmed_words = [];
+
+    foreach ($content_words as $word) {
+        $content_length += strlen($word);
+
+        if($content_length <= $length_limit) {
+            array_push($trimmed_words, $word);
+        } else {
+            break;
+        }
+    }
+
+    $trimmed_content = implode(' ', $trimmed_words);
+    return $content_length > $length_limit ? "<p>{$trimmed_content}...</p>{$more_link}" : "<p>{$content}</p>";
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -247,7 +276,7 @@ $popular_posts = [
                     <div class="post__main">
                         <?php switch ($value[ 'type' ]):
                             case 'post-text': ?>
-                                <p><?=$value['content'];?></p>
+                                <?=trim_content($value['content']);?>
                                 <?php break;
                             case 'post-quote': ?>
                                 <blockquote>
