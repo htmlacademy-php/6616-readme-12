@@ -44,29 +44,29 @@ $popular_posts = [
  * Урезает оригинальный текст, если его длина меньше заданного числа символов
  *
  * @param string $content Оригинальный текст
- * @param int $length_limit Лимит на число символов
+ * @param int $lengthLimit Лимит на число символов
  *
  * @return string Возвращается либо урезанный текст с ссылкой, либо оригинальный
  */
-function trim_content(string $content, int $length_limit = 300): string
+function trimContent(string $content, int $lengthLimit = 300): string
 {
-    $more_link = '<a class="post-text__more-link" href="#">Читать далее</a>';
-    $content_words = explode(' ', $content);
-    $content_length = 0;
-    $trimmed_words = [];
+    $moreLink = '<a class="post-text__more-link" href="#">Читать далее</a>';
+    $contentWords = explode(' ', $content);
+    $contentLength = 0;
+    $trimmedWords = [];
 
-    foreach ($content_words as $word) {
-        $content_length += strlen($word);
+    foreach ($contentWords as $word) {
+        $contentLength += mb_strlen($word) + 1;
 
-        if($content_length <= $length_limit) {
-            array_push($trimmed_words, $word);
+        if($contentLength <= $lengthLimit) {
+            $trimmedWords[] = $word;
         } else {
             break;
         }
     }
 
-    $trimmed_content = implode(' ', $trimmed_words);
-    return $content_length > $length_limit ? "<p>{$trimmed_content}...</p>{$more_link}" : "<p>{$content}</p>";
+    $trimmedContent = implode(' ', $trimmedWords);
+    return $contentLength > $lengthLimit ? "<p>{$trimmedContent}...</p>{$moreLink}" : "<p>{$content}</p>";
 }
 ?>
 <!DOCTYPE html>
@@ -276,7 +276,7 @@ function trim_content(string $content, int $length_limit = 300): string
                     <div class="post__main">
                         <?php switch ($value[ 'type' ]):
                             case 'post-text': ?>
-                                <?=trim_content($value['content']);?>
+                                <?=trimContent($value['content']);?>
                                 <?php break;
                             case 'post-quote': ?>
                                 <blockquote>
