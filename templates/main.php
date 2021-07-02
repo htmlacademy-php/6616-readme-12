@@ -85,7 +85,7 @@
     </div>
     <div class="popular__posts">
         <?php foreach ($popularPosts as $key => $value): ?>
-            <article class="popular__post post <?= $value[ 'type' ]; ?>">
+            <article class="popular__post post <?= htmlspecialchars($value[ 'type' ]); ?>">
                 <header class="post__header">
                     <h2><?= htmlspecialchars($value[ 'title' ]); ?></h2>
                 </header>
