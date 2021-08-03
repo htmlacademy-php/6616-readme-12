@@ -130,7 +130,9 @@
                             </div>
                             <div class="post__info">
                                 <b class="post__author-name"><?= htmlspecialchars($value[ 'username' ]); ?></b>
-                                <time class="post__time" datetime="">дата</time>
+                                <?php $generatedDate = generate_random_date($key); ?>
+                                <time class="post__time" datetime="<?= $generatedDate; ?>"
+                                    title="<?= date('d.m.Y H:i', strtotime($generatedDate)); ?>"><?= getRelativeData($generatedDate); ?></time>
                             </div>
                         </a>
                     </div>
