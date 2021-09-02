@@ -29,9 +29,17 @@ INSERT INTO post_comment (content, user_id, post_id)
 VALUES ('Сам жду! Интересно узнать, чем все кончится...', 3, 2),
        ('Как красиво! Удачи!', 2, 4);
 
+-- лайк к посту;
+
+INSERT INTO post_like SET user_id = 2, post_id = 1;
+
+-- подписаться на пользователя;
+
+INSERT INTO user_subscription SET subscriber_id = 1, user_id = 2;
+
 -- список постов с сортировкой по популярности и вместе с именами авторов и типом контента;
 
-SELECT user_id, content_type_id
+SELECT post.*, user.login, content_type.type_class
 FROM post
        INNER JOIN user ON post.user_id = user.id
        INNER JOIN content_type ON post.content_type_id = content_type.id
@@ -43,15 +51,24 @@ SELECT * FROM post WHERE user_id = 2;
 
 -- список комментариев для одного поста, в комментариях должен быть логин пользователя;
 
-SELECT content, user.login
+SELECT post_comment.id, post_comment.date_add, post_comment.content, user.login
 FROM post_comment
        INNER JOIN user ON post_comment.user_id = user.id
-WHERE post_comment.post_id = 1;
+       INNER JOIN post ON post_comment.post_id = post.id
+WHERE post_id = 2;
 
--- лайк к посту;
+-- количество комментариев к посту;
 
-INSERT INTO post_like SET user_id = 2, post_id = 1;
+SELECT COUNT(*) FROM post_comment WHERE post_id = 2;
 
--- подписаться на пользователя;
+-- количество лайков у поста;
 
-INSERT INTO user_subscription SET subscriber_id = 1, user_id = 2;
+SELECT COUNT(*) FROM post_like WHERE post_id = 1;
+
+-- количество постов у пользователя;
+
+SELECT COUNT(*) FROM post WHERE user_id = 2;
+
+-- количество подписчиков у пользователя;
+
+SELECT COUNT(*) FROM user_subscription WHERE user_id = 2;
