@@ -76,3 +76,50 @@
 
         return "{$minutes} {$minutesDeclination} назад";
     }
+
+    /**
+     * Подключает к базе данный
+     *
+     * @return mysqli Возвращается результат подключения
+     */
+    function getConnection(): mysqli
+    {
+        $dbConnection = mysqli_connect("localhost", "root", "root", "readme");
+        mysqli_set_charset($dbConnection, "utf8");
+
+        return $dbConnection;
+    }
+
+    /**
+     * Получает список типов постов из базы данных
+     *
+     * @param mysqli $dbConnection Подключение к базе данных
+     *
+     * @return array Возвращается массив с типами постов
+     */
+    function getContentTypes(mysqli $dbConnection): array
+    {
+        $sql = 'SELECT * FROM content_type';
+        $sqlResult = mysqli_query($dbConnection, $sql);
+
+        return mysqli_fetch_all($sqlResult, MYSQLI_ASSOC);
+    }
+
+    /**
+     * Получает список постов из базы данных
+     *
+     * @param mysqli $dbConnection Подключение к базе данных
+     *
+     * @return array Возвращается массив с постами
+     */
+    function getPosts(mysqli $dbConnection): array
+    {
+        $sql = 'SELECT p.*, u.login, u.avatar, ct.type_class
+                FROM post p
+                INNER JOIN user u ON p.user_id = u.id
+                INNER JOIN content_type ct ON p.content_type_id = ct.id
+                ORDER BY show_count DESC';
+        $sqlResult = mysqli_query($dbConnection, $sql);
+
+        return mysqli_fetch_all($sqlResult, MYSQLI_ASSOC);
+    }

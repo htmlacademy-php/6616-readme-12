@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS user (
   avatar VARCHAR(128)
 );
 
-CREATE UNIQUE INDEX user_email ON user (email);
-CREATE UNIQUE INDEX user_login ON user (login);
+CREATE INDEX u_email ON user (email);
+CREATE INDEX u_login ON user (login);
 
 CREATE TABLE IF NOT EXISTS content_type (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS hashtag (
   name VARCHAR(128) NOT NULL UNIQUE
 );
 
-CREATE UNIQUE INDEX hashtag_name ON hashtag (name);
+CREATE INDEX h_name ON hashtag (name);
 
 CREATE TABLE IF NOT EXISTS post_hashtag (
   post_id INT UNSIGNED NOT NULL,
