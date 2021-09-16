@@ -80,18 +80,29 @@
     /**
      * Подключает к базе данный
      *
+     * @param string $hostname
+     * @param string $username
+     * @param string $password
+     * @param string $database
+     *
      * @return mysqli Возвращается результат подключения
      */
-    function getConnection(): mysqli
+    function getConnection(string $hostname, string $username, string $password, string $database): mysqli
     {
-        $dbConnection = mysqli_connect("localhost", "root", "root", "readme");
+        $dbConnection = mysqli_connect($hostname, $username, $password, $database);
+
+        if ( !$dbConnection) {
+            print("Ошибка подключения: " . mysqli_connect_error());
+            exit;
+        }
+
         mysqli_set_charset($dbConnection, "utf8");
 
         return $dbConnection;
     }
 
     /**
-     * Получает список типов постов из базы данных
+     * Получает список типов постов
      *
      * @param mysqli $dbConnection Подключение к базе данных
      *

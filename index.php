@@ -1,8 +1,9 @@
 <?php
+    require_once('config.php');
     require_once('helpers.php');
     require_once('functions.php');
 
-    $connection = getConnection();
+    $connection = getConnection(DBHOST, DBUSER, DBPASSWORD, DBNAME);
     $posts = getPosts($connection);
     $contentTypes = getContentTypes($connection);
 
