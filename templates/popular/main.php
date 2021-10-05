@@ -36,13 +36,14 @@
             <b class="popular__filters-caption filters__caption">Тип контента:</b>
             <ul class="popular__filters-list filters__list">
                 <li class="popular__filters-item popular__filters-item--all filters__item filters__item--all">
-                    <a class="filters__button filters__button--ellipse filters__button--all filters__button--active" href="#">
+                    <a class="filters__button filters__button--ellipse filters__button--all<?= activeFilterHandler($filterTypeId); ?>" href="/">
                         <span>Все</span>
                     </a>
                 </li>
                 <?php foreach ($contentTypes as $key => $value): ?>
                     <li class="popular__filters-item filters__item">
-                        <a class="filters__button filters__button--<?= $value[ 'type_class' ] ?> button" href="#">
+                        <a class="filters__button filters__button--<?= $value[ 'type_class' ] ?><?= activeFilterHandler($filterTypeId,
+                            $value[ 'id' ]); ?> button" href="?type_id=<?= $value[ 'id' ] ?>">
                             <span class="visually-hidden"><?= $value[ 'type_name' ] ?></span>
                             <svg class="filters__icon" width="22" height="18">
                                 <use xlink:href="#icon-filter-<?= $value[ 'type_class' ] ?>"></use>
@@ -58,7 +59,7 @@
             <article
                 class="popular__post post<?= htmlspecialchars($value[ 'type_class' ]) ? ' post-' . htmlspecialchars($value[ 'type_class' ]) : '' ?>">
                 <header class="post__header">
-                    <h2><?= htmlspecialchars($value[ 'title' ]); ?></h2>
+                    <h2><a href="post.php?id=<?= $value[ 'id' ]; ?>"><?= htmlspecialchars($value[ 'title' ]); ?></a></h2>
                 </header>
                 <div class="post__main">
                     <?php switch ($value[ 'type_class' ]):
@@ -117,14 +118,14 @@
                                 <svg class="post__indicator-icon post__indicator-icon--like-active" width="20" height="17">
                                     <use xlink:href="#icon-heart-active"></use>
                                 </svg>
-                                <span>0</span>
+                                <span><?= getPostLikesCount($connection, $value[ 'id' ]); ?></span>
                                 <span class="visually-hidden">количество лайков</span>
                             </a>
                             <a class="post__indicator post__indicator--comments button" href="#" title="Комментарии">
                                 <svg class="post__indicator-icon" width="19" height="17">
                                     <use xlink:href="#icon-comment"></use>
                                 </svg>
-                                <span>0</span>
+                                <span><?= getPostCommentsCount($connection, $value[ 'id' ]); ?></span>
                                 <span class="visually-hidden">количество комментариев</span>
                             </a>
                         </div>
