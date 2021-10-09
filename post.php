@@ -12,18 +12,10 @@
         http_response_code(404);
     } else {
         $postComments = getPostComments($connection, $post[ 'id' ]);
-        $postLikesCount = getPostLikesCount($connection, $post[ 'id' ]);
-        $postCommentsCount = getPostCommentsCount($connection, $post[ 'id' ]);
-        $userPostsCount = getUserPostsCount($connection, $post[ 'user_id' ]);
-        $userSubscribersCount = getUserSubscribersCount($connection, $post[ 'user_id' ]);
 
         $pageContent = include_template('post/main.php', [
             'post' => $post,
             'postComments' => $postComments,
-            'postLikesCount' => $postLikesCount,
-            'postCommentsCount' => $postCommentsCount,
-            'userPostsCount' => $userPostsCount,
-            'userSubscribersCount' => $userSubscribersCount,
         ]);
 
         $pageLayout = include_template('post/layout.php', [

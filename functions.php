@@ -128,10 +128,13 @@
      */
     function getPosts(mysqli $dbConnection, int $filterTypeId): array
     {
-        $sql = 'SELECT p.*, u.login, u.avatar, ct.type_class
+        $sql = 'SELECT p.*, u.login, u.avatar, ct.type_class,
+                COALESCE(pl.cnt, 0) AS likes_count, COALESCE(pc.cnt, 0) AS comments_count
                 FROM post p
                 INNER JOIN user u ON p.user_id = u.id
-                INNER JOIN content_type ct ON p.content_type_id = ct.id';
+                INNER JOIN content_type ct ON p.content_type_id = ct.id
+                LEFT OUTER JOIN (SELECT post_id, COUNT(*) AS cnt FROM post_like GROUP BY post_id) pl ON p.id = pl.post_id
+                LEFT OUTER JOIN (SELECT post_id, COUNT(*) AS cnt FROM post_comment GROUP BY post_id) pc ON p.id = pc.post_id';
         if ($filterTypeId) {
             $sql .= ' WHERE ct.id = ' . $filterTypeId;
         }
@@ -140,6 +143,37 @@
         $sqlQuery = mysqli_query($dbConnection, $sql);
 
         return mysqli_fetch_all($sqlQuery, MYSQLI_ASSOC);
+    }
+
+    /**
+     * Получает пост из базы данных
+     *
+     * @param mysqli $dbConnection Подключение к базе данных
+     * @param int $postId ID поста из параметра
+     *
+     * @return array Возвращается массив с постом
+     */
+    function getPost(mysqli $dbConnection, int $postId): array
+    {
+        $sql = 'SELECT p.*,  u.login, u.avatar, u.date_add as date_register, ct.type_class,
+                COALESCE(pl.cnt, 0) AS likes_count, COALESCE(pc.cnt, 0) AS comments_count, COALESCE(us.cnt, 0) AS subscribers_count, COALESCE(up.cnt, 0) AS posts_count
+                FROM post p
+                INNER JOIN user u ON p.user_id = u.id
+                INNER JOIN content_type ct ON p.content_type_id = ct.id
+                LEFT OUTER JOIN (SELECT post_id, COUNT(*) AS cnt FROM post_like GROUP BY post_id) pl ON p.id = pl.post_id
+                LEFT OUTER JOIN (SELECT post_id, COUNT(*) AS cnt FROM post_comment GROUP BY post_id) pc ON p.id = pc.post_id
+                LEFT OUTER JOIN (SELECT user_id, COUNT(*) AS cnt FROM user_subscription GROUP BY user_id) us ON p.user_id = us.user_id
+                LEFT OUTER JOIN (SELECT user_id, COUNT(*) AS cnt FROM post GROUP BY user_id) up ON p.user_id = up.user_id
+                WHERE p.id = ' . $postId;
+
+        $sqlQuery = mysqli_query($dbConnection, $sql);
+        $sqlResult = mysqli_fetch_assoc($sqlQuery);
+
+        if ($sqlResult !== null) {
+            return $sqlResult;
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -164,129 +198,12 @@
     }
 
     /**
-     * Получает пост из базы данных
-     *
-     * @param mysqli $dbConnection Подключение к базе данных
-     * @param int $postId ID поста из параметра
-     *
-     * @return array|false Возвращаемся массив с постом или отрицание, если такого поста нет
-     */
-    function getPost(mysqli $dbConnection, int $postId)
-    {
-        $sql = 'SELECT p.*, u.login, u.avatar, u.date_add as register_date, ct.type_class
-                FROM post p
-                INNER JOIN user u ON p.user_id = u.id
-                INNER JOIN content_type ct ON p.content_type_id = ct.id
-                WHERE p.id = ' . $postId;
-
-        $sqlQuery = mysqli_query($dbConnection, $sql);
-
-        if ( !$sqlQuery) {
-            return false;
-        } else {
-            return mysqli_fetch_assoc($sqlQuery);
-        }
-    }
-
-    /**
-     * Получает количество лайков для поста
-     *
-     * @param mysqli $dbConnection Подключение к базе данных
-     * @param int $postId ID поста из параметра
-     *
-     * @return int Возвращаемся количество лайков
-     */
-    function getPostLikesCount(mysqli $dbConnection, int $postId)
-    {
-        $sql = 'SELECT COUNT(*) as count FROM post_like WHERE post_id = ' . $postId;
-
-        $sqlQuery = mysqli_query($dbConnection, $sql);
-
-        if ( !$sqlQuery) {
-            return false;
-        } else {
-            $sqlResult = mysqli_fetch_assoc($sqlQuery);
-
-            return (int)$sqlResult[ 'count' ];
-        }
-    }
-
-    /**
-     * Получает количество комментариев для поста
-     *
-     * @param mysqli $dbConnection Подключение к базе данных
-     * @param int $postId ID поста из параметра
-     *
-     * @return int Возвращаемся количество комментариев
-     */
-    function getPostCommentsCount(mysqli $dbConnection, int $postId)
-    {
-        $sql = 'SELECT COUNT(*) as count FROM post_comment WHERE post_id = ' . $postId;
-
-        $sqlQuery = mysqli_query($dbConnection, $sql);
-
-        if ( !$sqlQuery) {
-            return false;
-        } else {
-            $sqlResult = mysqli_fetch_assoc($sqlQuery);
-
-            return (int)$sqlResult[ 'count' ];
-        }
-    }
-
-    /**
-     * Получает количество подписчиков пользователя
-     *
-     * @param mysqli $dbConnection Подключение к базе данных
-     * @param int $userId ID пользователя
-     *
-     * @return int Возвращаемся подписчиков постов
-     */
-    function getUserSubscribersCount(mysqli $dbConnection, int $userId)
-    {
-        $sql = 'SELECT COUNT(*) as count FROM user_subscription WHERE user_id = ' . $userId;
-
-        $sqlQuery = mysqli_query($dbConnection, $sql);
-
-        if ( !$sqlQuery) {
-            return false;
-        } else {
-            $sqlResult = mysqli_fetch_assoc($sqlQuery);
-
-            return (int)$sqlResult[ 'count' ];
-        }
-    }
-
-    /**
-     * Получает количество постов пользователя
-     *
-     * @param mysqli $dbConnection Подключение к базе данных
-     * @param int $userId ID пользователя
-     *
-     * @return int Возвращаемся количество постов
-     */
-    function getUserPostsCount(mysqli $dbConnection, int $userId)
-    {
-        $sql = 'SELECT COUNT(*) as count FROM post WHERE user_id = ' . $userId;
-
-        $sqlQuery = mysqli_query($dbConnection, $sql);
-
-        if ( !$sqlQuery) {
-            return false;
-        } else {
-            $sqlResult = mysqli_fetch_assoc($sqlQuery);
-
-            return (int)$sqlResult[ 'count' ];
-        }
-    }
-
-    /**
      * Определяет, нужен ли класс активности для фильтра или нет
      *
      * @param int $filterTypeId
      * @param int $typeId
      *
-     * @return string Возвращаем класс для активности или пустую строку
+     * @return string Возвращается класс для активности или пустую строку
      */
     function activeFilterHandler(int $filterTypeId, int $typeId = 0): string
     {

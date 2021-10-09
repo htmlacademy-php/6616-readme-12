@@ -31,14 +31,14 @@
                             <svg class="post__indicator-icon post__indicator-icon--like-active" width="20" height="17">
                                 <use xlink:href="#icon-heart-active"></use>
                             </svg>
-                            <span><?= $postLikesCount ?></span>
+                            <span><?= $post[ 'likes_count' ] ?></span>
                             <span class="visually-hidden">количество лайков</span>
                         </a>
                         <a class="post__indicator post__indicator--comments button" href="#" title="Комментарии">
                             <svg class="post__indicator-icon" width="19" height="17">
                                 <use xlink:href="#icon-comment"></use>
                             </svg>
-                            <span><?= $postCommentsCount ?></span>
+                            <span><?= $post[ 'comments_count' ] ?></span>
                             <span class="visually-hidden">количество комментариев</span>
                         </a>
                         <a class="post__indicator post__indicator--repost button" href="#" title="Репост">
@@ -103,7 +103,7 @@
                             </ul>
                             <a class="comments__more-link" href="#">
                                 <span>Показать все комментарии</span>
-                                <sup class="comments__amount"><?= $postCommentsCount ?></sup>
+                                <sup class="comments__amount"><?= $post[ 'comments_count' ] ?></sup>
                             </a>
                         <?php else: ?>
                             <p>Комментариев нет</p>
@@ -122,18 +122,19 @@
                         <a class="post-details__name user__name" href="#">
                             <span><?= $post[ 'login' ]; ?></span>
                         </a>
-                        <time class="post-details__time user__time" datetime="<?= $post[ 'register_date' ]; ?>"><?= getRelativeData($post[ 'register_date' ], true); ?></time>
+                        <time class="post-details__time user__time"
+                            datetime="<?= $post[ 'date_register' ]; ?>"><?= getRelativeData($post[ 'date_register' ], true); ?></time>
                     </div>
                 </div>
                 <div class="post-details__rating user__rating">
                     <p class="post-details__rating-item user__rating-item user__rating-item--subscribers">
-                        <span class="post-details__rating-amount user__rating-amount"><?= $userSubscribersCount; ?></span>
-                        <span class="post-details__rating-text user__rating-text"><?= get_noun_plural_form($userSubscribersCount, 'подписчик',
-                                'подписчика', 'подписчиков'); ?></span>
+                        <span class="post-details__rating-amount user__rating-amount"><?= $post[ 'subscribers_count' ]; ?></span>
+                        <span class="post-details__rating-text user__rating-text"><?= get_noun_plural_form($post[ 'subscribers_count' ],
+                                'подписчик', 'подписчика', 'подписчиков'); ?></span>
                     </p>
                     <p class="post-details__rating-item user__rating-item user__rating-item--publications">
-                        <span class="post-details__rating-amount user__rating-amount"><?= $userPostsCount; ?></span>
-                        <span class="post-details__rating-text user__rating-text"><?= get_noun_plural_form($userPostsCount, 'публикация',
+                        <span class="post-details__rating-amount user__rating-amount"><?= $post[ 'posts_count' ]; ?></span>
+                        <span class="post-details__rating-text user__rating-text"><?= get_noun_plural_form($post[ 'posts_count' ], 'публикация',
                                 'публикации', 'публикаций'); ?></span>
                     </p>
                 </div>
