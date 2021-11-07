@@ -36,13 +36,14 @@
             <b class="popular__filters-caption filters__caption">Тип контента:</b>
             <ul class="popular__filters-list filters__list">
                 <li class="popular__filters-item popular__filters-item--all filters__item filters__item--all">
-                    <a class="filters__button filters__button--ellipse filters__button--all<?= activeFilterHandler($filterTypeId); ?>" href="/">
+                    <a class="filters__button filters__button--ellipse filters__button--all<?= activePopularFilterHandler($filterTypeId); ?>"
+                        href="/">
                         <span>Все</span>
                     </a>
                 </li>
                 <?php foreach ($contentTypes as $key => $value): ?>
                     <li class="popular__filters-item filters__item">
-                        <a class="filters__button filters__button--<?= $value[ 'type_class' ] ?><?= activeFilterHandler($filterTypeId,
+                        <a class="filters__button filters__button--<?= $value[ 'type_class' ] ?><?= activePopularFilterHandler($filterTypeId,
                             $value[ 'id' ]); ?> button" href="?type_id=<?= $value[ 'id' ] ?>">
                             <span class="visually-hidden"><?= $value[ 'type_name' ] ?></span>
                             <svg class="filters__icon" width="22" height="18">
@@ -80,16 +81,29 @@
                             <?php break;
                         case 'link': ?>
                             <div class="post-link__wrapper">
-                                <a class="post-link__external" href="https://<?= htmlspecialchars($value[ 'link' ]); ?>" title="Перейти по ссылке">
+                                <a class="post-link__external" href="<?= htmlspecialchars($value[ 'link' ]); ?>" title="Перейти по ссылке">
                                     <div class="post-link__info-wrapper">
                                         <div class="post-link__icon-wrapper">
-                                            <img src="https://www.google.com/s2/favicons?domain=vitadental.ru" alt="Иконка">
+                                            <img src="https://www.google.com/s2/favicons?domain=<?= htmlspecialchars($value[ 'link' ]); ?>" alt="Иконка">
                                         </div>
                                         <div class="post-link__info">
                                             <h3><?= htmlspecialchars($value[ 'title' ]); ?></h3>
                                         </div>
                                     </div>
                                     <span><?= htmlspecialchars($value[ 'link' ]); ?></span>
+                                </a>
+                            </div>
+                            <?php break;
+                        case 'video': ?>
+                            <div class="post-video__block">
+                                <div class="post-video__preview">
+                                    <?= embed_youtube_cover($value[ 'video' ]); ?>
+                                </div>
+                                <a href="post.php?id=<?= $value[ 'id' ]; ?>" class="post-video__play-big button">
+                                    <svg class="post-video__play-big-icon" width="14" height="14">
+                                        <use xlink:href="#icon-video-play-big"></use>
+                                    </svg>
+                                    <span class="visually-hidden">Запустить проигрыватель</span>
                                 </a>
                             </div>
                             <?php break;

@@ -198,6 +198,22 @@
     }
 
     /**
+     * Получает список всех хэштегов из базы данных
+     *
+     * @param mysqli $dbConnection Подключение к базе данных
+     *
+     * @return array Возвращается массив с хэштегами
+     */
+    function getTags(mysqli $dbConnection): array
+    {
+        $sql = 'SELECT id, name FROM hashtag';
+
+        $sqlQuery = mysqli_query($dbConnection, $sql);
+
+        return mysqli_fetch_all($sqlQuery, MYSQLI_ASSOC);
+    }
+
+    /**
      * Определяет, нужен ли класс активности для фильтра или нет
      *
      * @param int $filterTypeId
@@ -205,10 +221,27 @@
      *
      * @return string Возвращается класс для активности или пустую строку
      */
-    function activeFilterHandler(int $filterTypeId, int $typeId = 0): string
+    function activePopularFilterHandler(int $filterTypeId, int $typeId = 0): string
     {
         if ($filterTypeId === $typeId) {
             return ' filters__button--active';
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Определяет, нужен ли класс активности для фильтра или нет
+     *
+     * @param int $tabTypeId
+     * @param int $typeId
+     *
+     * @return string Возвращается класс для активности или пустую строку
+     */
+    function activeAddFilterHandler(int $tabTypeId, int $typeId = 1): string
+    {
+        if ($tabTypeId === $typeId) {
+            return ' filters__button--active tabs__item--active';
         } else {
             return '';
         }
