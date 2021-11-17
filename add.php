@@ -36,14 +36,14 @@
             'link-url' => function ($value) {
                 return validateUrl($value);
             },
+            'photo-url' => function ($value) {
+                return validatePhotoUrl($value);
+            },
             'video-url' => function ($value) {
                 return validateVideoUrl($value);
             },
             'tags' => function ($value) {
                 return validateTags($value);
-            },
-            'photo-url' => function ($value) {
-                return validatePhotoUrl($value);
             },
         ];
 
