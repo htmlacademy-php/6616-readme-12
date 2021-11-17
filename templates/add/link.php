@@ -8,14 +8,14 @@
                 <?php echo include_template('add/heading.php', [
                     'errors' => $errors,
                 ]); ?>
-                <div class="adding-post__textarea-wrapper form__input-wrapper<?= $errors[ 'url' ] ? ' form__input-section--error' : ''; ?>">
+                <div class="adding-post__textarea-wrapper form__input-wrapper<?= $errors[ 'link-url' ] ? ' form__input-section--error' : ''; ?>">
                     <label class="adding-post__label form__label" for="post-link">Ссылка <span class="form__input-required">*</span></label>
                     <div class="form__input-section">
-                        <input class="adding-post__input form__input" id="post-link" type="text" name="url">
+                        <input class="adding-post__input form__input" id="post-link" type="text" name="link-url" value="<?= htmlspecialchars($_POST[ 'link-url' ] ?? '') ?>">
                         <button class="form__error-button button" type="button">!<span class="visually-hidden">Информация об ошибке</span></button>
                         <div class="form__error-text">
                             <h3 class="form__error-title">Заголовок сообщения</h3>
-                            <p class="form__error-desc"><?= $errors[ 'url' ] ?? ''; ?></p>
+                            <p class="form__error-desc"><?= $errors[ 'link-url' ] ?? ''; ?></p>
                         </div>
                     </div>
                 </div>
@@ -33,14 +33,14 @@
                                 case 'heading':
                                     $errorType = 'Заголовок';
                                     break;
-                                case 'url':
+                                case 'link-url':
                                     $errorType = 'Ссылка';
                                     break;
                                 case 'tags':
                                     $errorType = 'Теги';
                                     break;
                             } ?>
-                            <li class="form__invalid-item"><?= $errorType . '. ' . $error; ?></li>
+                            <li class="form__invalid-item"><?= $errorType . ': ' . $error; ?></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>

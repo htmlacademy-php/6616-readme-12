@@ -1,81 +1,137 @@
 <?php
     require_once('helpers.php');
+    require_once('functions.php');
 
     /**
-     * @param $title
+     * Проверяет поле на заполнение
+     *
+     * @param $value
      *
      * @return string
      */
-    function validateTitle($title): string
+    function validateFilled($value): string
     {
-        if (empty($_POST[ $title ])) {
-            return 'Поле не заполнено';
+        $message = '';
+
+        if (!$value) {
+            $message = 'Поле не заполнено';
         }
 
-        return '';
+        return $message;
     }
 
     /**
-     * @param $text
+     * Проверяет теги на корректное написания
+     *
+     * @param $value
      *
      * @return string
      */
-    function validateText($text): string
+    function validateTags($value): string
     {
-        if (empty($_POST[ $text ])) {
-            return 'Поле не заполнено';
-        }
+        $message = '';
+        $tags = explode(' ', $value);
 
-        return '';
-    }
-
-    /**
-     * @param $author
-     *
-     * @return string
-     */
-    function validateAuthor($author): string
-    {
-        if (empty($_POST[ $author ])) {
-            return 'Поле не заполнено';
-        }
-
-        return '';
-    }
-
-    /**
-     * @param $url
-     *
-     * @return string
-     */
-    function validateUrl($url): string
-    {
-        $urlValue = $_POST[ $url ];
-
-        if (isset($_FILES[ 'userpic-file-photo' ])) {
-            $fileTypes = ['image/png', 'image/jpeg', 'image/gif'];
-            if ($_FILES[ 'userpic-file-photo' ][ 'error' ] && empty($urlValue)) {
-                return 'Укажите ссылку или загрузите фотографию';
-            } elseif ( !$_FILES[ 'userpic-file-photo' ][ 'error' ]) {
-                if ( !in_array($_FILES[ 'userpic-file-photo' ][ 'type' ], $fileTypes)) {
-                    return 'Загрузите корректный тип файла';
-                }
-            } elseif ($_FILES[ 'userpic-file-photo' ][ 'error' ]) {
-                if ( !filter_var($urlValue, FILTER_VALIDATE_URL)) {
-                    return 'Введите корректную ссылку';
-                } elseif ( !file_get_contents($urlValue)) {
-                    return 'Не удалось загрузить файл';
-                } elseif ( !in_array(get_headers($_POST[ 'url' ], 1)[ 'Content-Type' ], $fileTypes)) {
-                    return 'Загрузите корректный тип файла';
+        if (!$value) {
+            $message = '';
+        } else {
+            foreach ($tags as $value) {
+                if (!preg_match('/^\w+$/ui', $value)) {
+                    $message = 'Теги должны быть разделены пробелами и могут состоять из букв, цифр и символа подчеркивания';
+                    break;
                 }
             }
-        } elseif (empty($urlValue)) {
-            return "Поле не заполнено";
-        } elseif ( !filter_var($urlValue, FILTER_VALIDATE_URL)) {
-            return 'Введите корректную ссылку';
-        } elseif ($_POST[ 'typeName' ] === 'video' && !is_bool(check_youtube_url($urlValue))) {
-            return check_youtube_url($urlValue);
         }
 
-        return '';
+        return $message;
+    }
+
+    /**
+     * Проверяет корректное добавление файла
+     *
+     * @param $filePath
+     *
+     * @return string
+     */
+    function validateFile($filePath): string
+    {
+        $message = '';
+        $fileTypes = ['image/png', 'image/jpeg', 'image/gif'];
+        $fileType = getFileType($filePath);
+
+        if (!in_array($fileType, $fileTypes)) {
+            $message = 'Некорректный тип файла';
+        }
+
+        return $message;
+    }
+
+    /**
+     * Проверяет корректное добавление ссылки
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    function validateUrl($value): string
+    {
+        $message = '';
+
+        if (!filter_var($value, FILTER_VALIDATE_URL)) {
+            $message = 'Указан некорректный URL-адрес';
+        }
+
+        return $message;
+    }
+
+    /**
+     * Проверяет корректное добавление пути картинки
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    function validatePhotoUrl($value): string
+    {
+        $fileTypes = ['image/png', 'image/jpeg', 'image/gif'];
+
+        if (!empty($_FILES['file']['name'])) {
+            $message = '';
+        } elseif (!$value) {
+            $message = 'Укажите ссылку из интернета или загрузите файл';
+        } else {
+            $message = validateUrl($value);
+
+            if (!$message) {
+                if (!file_get_contents($value)) {
+                    $message = 'Не удалось загрузить файл';
+                } elseif (!in_array(get_headers($value, 1)['Content-Type'], $fileTypes)) {
+                    $message = 'Некорректный тип файла';
+                }
+            }
+        }
+
+        return $message;
+    }
+
+    /**
+     * Проверяет корректное добавление ссылки на видео
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    function validateVideoUrl($value): string
+    {
+        $message = validateUrl($value);
+
+        if (!$message) {
+            $result = check_youtube_url($value);
+
+            if (gettype($result) === 'string') {
+                $message = $result;
+            }
+        }
+
+        return $message;
     }

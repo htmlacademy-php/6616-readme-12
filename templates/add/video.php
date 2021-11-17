@@ -8,14 +8,14 @@
                 <?php echo include_template('add/heading.php', [
                     'errors' => $errors,
                 ]); ?>
-                <div class="adding-post__input-wrapper form__input-wrapper<?= $errors[ 'url' ] ? ' form__input-section--error' : ''; ?>">
+                <div class="adding-post__input-wrapper form__input-wrapper<?= $errors[ 'video-url' ] ? ' form__input-section--error' : ''; ?>">
                     <label class="adding-post__label form__label" for="video-url">Ссылка youtube <span class="form__input-required">*</span></label>
                     <div class="form__input-section">
-                        <input class="adding-post__input form__input" id="video-url" type="text" name="url" placeholder="Введите ссылку">
+                        <input class="adding-post__input form__input" id="video-url" type="text" name="video-url" placeholder="Введите ссылку" value="<?= htmlspecialchars($_POST[ 'video-url' ] ?? '') ?>">
                         <button class="form__error-button button" type="button">!<span class="visually-hidden">Информация об ошибке</span></button>
                         <div class="form__error-text">
                             <h3 class="form__error-title">Заголовок сообщения</h3>
-                            <p class="form__error-desc"><?= $errors[ 'url' ] ?? ''; ?></p>
+                            <p class="form__error-desc"><?= $errors[ 'video-url' ] ?? ''; ?></p>
                         </div>
                     </div>
                 </div>
@@ -33,14 +33,14 @@
                                 case 'heading':
                                     $errorType = 'Заголовок';
                                     break;
-                                case 'url':
+                                case 'video-url':
                                     $errorType = 'Ссылка youtube';
                                     break;
                                 case 'tags':
                                     $errorType = 'Теги';
                                     break;
                             } ?>
-                            <li class="form__invalid-item"><?= $errorType . '. ' . $error; ?></li>
+                            <li class="form__invalid-item"><?= $errorType . ': ' . $error; ?></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>

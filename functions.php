@@ -42,39 +42,39 @@
         $dateCreate = date_create($date);
         $dateDiff = date_diff($dateCurrent, $dateCreate);
 
-        $days = intval($dateDiff->format("%a"));
-        $hours = intval($dateDiff->format("%H"));
-        $minutes = intval($dateDiff->format("%i"));
+        $days = intval($dateDiff->format('%a'));
+        $hours = intval($dateDiff->format('%H'));
+        $minutes = intval($dateDiff->format('%i'));
 
         $dateText = !$isRegisterDate ? 'назад' : 'на сайте';
 
         if ($days >= 35) {
             $months = floor($days / 30);
-            $monthsDeclination = get_noun_plural_form($months, "месяц", "месяца", "месяцев");
+            $monthsDeclination = get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев');
 
             return "{$months} {$monthsDeclination} {$dateText}";
         }
 
         if ($days >= 7 && $days < 35) {
             $weeks = floor($days / 7);
-            $weeksDeclination = get_noun_plural_form($weeks, "неделя", "недели", "недель");
+            $weeksDeclination = get_noun_plural_form($weeks, 'неделя', 'недели', 'недель');
 
             return "{$weeks} {$weeksDeclination} {$dateText}";
         }
 
         if ($days > 0 && $days < 7) {
-            $daysDeclination = get_noun_plural_form($days, "день", "дня", "дней");
+            $daysDeclination = get_noun_plural_form($days, 'день', 'дня', 'дней');
 
             return "{$days} {$daysDeclination} {$dateText}";
         }
 
         if ($hours > 0 && $hours < 24) {
-            $hoursDeclination = get_noun_plural_form($hours, "час", "часа", "часов");
+            $hoursDeclination = get_noun_plural_form($hours, 'час', 'часа', 'часов');
 
             return "{$hours} {$hoursDeclination} {$dateText}";
         }
 
-        $minutesDeclination = get_noun_plural_form($minutes, "минута", "минуты", "минут");
+        $minutesDeclination = get_noun_plural_form($minutes, 'минута', 'минуты', 'минут');
 
         return "{$minutes} {$minutesDeclination} {$dateText}";
     }
@@ -93,12 +93,12 @@
     {
         $dbConnection = mysqli_connect($hostname, $username, $password, $database);
 
-        if ( !$dbConnection) {
-            print("Ошибка подключения: " . mysqli_connect_error());
+        if (!$dbConnection) {
+            print('Ошибка подключения: ' . mysqli_connect_error());
             exit;
         }
 
-        mysqli_set_charset($dbConnection, "utf8");
+        mysqli_set_charset($dbConnection, 'utf8');
 
         return $dbConnection;
     }
@@ -247,3 +247,47 @@
         }
     }
 
+    /**
+     * Получает тип файла
+     *
+     * @param $filename
+     *
+     * @return string
+     */
+    function getFileType($filename): string
+    {
+        $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+
+        return finfo_file($fileInfo, $filename);
+    }
+
+    /**
+     * Получает расширение файла
+     *
+     * @param $fileType
+     *
+     * @return string
+     */
+    function getFileExt($fileType): string
+    {
+        $typeArray = explode('/', $fileType);
+
+        return '.' . array_pop($typeArray);
+    }
+
+    /**
+     * Сохраняет файл из интернета
+     *
+     * @param $fileUrl
+     *
+     * @return string
+     */
+    function saveFileFromLink($fileUrl): string
+    {
+        $file = file_get_contents($fileUrl);
+        $filename = uniqid();
+        $path = 'uploads/' . $filename;
+        file_put_contents($path, $file);
+
+        return $path;
+    }

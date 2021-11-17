@@ -8,15 +8,15 @@
                 <?php echo include_template('add/heading.php', [
                     'errors' => $errors,
                 ]); ?>
-                <div class="adding-post__textarea-wrapper form__textarea-wrapper<?= $errors[ 'text' ] ? ' form__input-section--error' : ''; ?>">
+                <div class="adding-post__textarea-wrapper form__textarea-wrapper<?= $errors['text'] ? ' form__input-section--error' : ''; ?>">
                     <label class="adding-post__label form__label" for="post-text">Текст поста <span class="form__input-required">*</span></label>
                     <div class="form__input-section">
                         <textarea class="adding-post__textarea form__textarea form__input" id="post-text" name="text"
-                            placeholder="Введите текст публикации"><?= htmlspecialchars($_POST[ 'text' ] ?? '') ?></textarea>
+                            placeholder="Введите текст публикации"><?= htmlspecialchars($_POST['text'] ?? '') ?></textarea>
                         <button class="form__error-button button" type="button">!<span class="visually-hidden">Информация об ошибке</span></button>
                         <div class="form__error-text">
                             <h3 class="form__error-title">Заголовок сообщения</h3>
-                            <p class="form__error-desc"><?= $errors[ 'text' ] ?? ''; ?></p>
+                            <p class="form__error-desc"><?= $errors['text'] ?? ''; ?></p>
                         </div>
                     </div>
                 </div>
@@ -24,7 +24,7 @@
                     'errors' => $errors,
                 ]); ?>
             </div>
-            <?php if ( !empty($errors)): ?>
+            <?php if (!empty($errors)): ?>
                 <div class="form__invalid-block">
                     <b class="form__invalid-slogan">Пожалуйста, исправьте следующие ошибки:</b>
                     <ul class="form__invalid-list">
@@ -40,8 +40,10 @@
                                 case 'tags':
                                     $errorType = 'Теги';
                                     break;
-                            } ?>
-                            <li class="form__invalid-item"><?= $errorType . '. ' . $error; ?></li>
+                            }
+                            if ($error): ?>
+                                <li class="form__invalid-item"><?= $errorType . ': ' . $error; ?></li>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>
                 </div>

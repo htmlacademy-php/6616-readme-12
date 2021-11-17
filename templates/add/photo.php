@@ -8,14 +8,14 @@
                 <?php echo include_template('add/heading.php', [
                     'errors' => $errors,
                 ]); ?>
-                <div class="adding-post__input-wrapper form__input-wrapper<?= $errors[ 'url' ] ? ' form__input-section--error' : ''; ?>">
+                <div class="adding-post__input-wrapper form__input-wrapper<?= $errors['photo-url'] ? ' form__input-section--error' : ''; ?>">
                     <label class="adding-post__label form__label" for="photo-url">Ссылка из интернета</label>
                     <div class="form__input-section">
-                        <input class="adding-post__input form__input" id="photo-url" type="text" name="url" placeholder="Введите ссылку">
+                        <input class="adding-post__input form__input" id="photo-url" type="text" name="photo-url" placeholder="Введите ссылку" value="<?= htmlspecialchars($_POST[ 'photo-url' ] ?? '') ?>">
                         <button class="form__error-button button" type="button">!<span class="visually-hidden">Информация об ошибке</span></button>
                         <div class="form__error-text">
                             <h3 class="form__error-title">Заголовок сообщения</h3>
-                            <p class="form__error-desc"><?= $errors[ 'url' ] ?? ''; ?></p>
+                            <p class="form__error-desc"><?= $errors['photo-url'] ?? ''; ?></p>
                         </div>
                     </div>
                 </div>
@@ -23,7 +23,7 @@
                     'errors' => $errors,
                 ]); ?>
             </div>
-            <?php if ( !empty($errors)): ?>
+            <?php if (!empty($errors)): ?>
                 <div class="form__invalid-block">
                     <b class="form__invalid-slogan">Пожалуйста, исправьте следующие ошибки:</b>
                     <ul class="form__invalid-list">
@@ -33,14 +33,19 @@
                                 case 'heading':
                                     $errorType = 'Заголовок';
                                     break;
-                                case 'url':
+                                case 'photo-url':
                                     $errorType = 'Ссылка из интернета';
+                                    break;
+                                case 'file':
+                                    $errorType = 'Фото';
                                     break;
                                 case 'tags':
                                     $errorType = 'Теги';
                                     break;
-                            } ?>
-                            <li class="form__invalid-item"><?= $errorType . '. ' . $error; ?></li>
+                            }
+                            if ($error): ?>
+                                <li class="form__invalid-item"><?= $errorType . ': ' . $error; ?></li>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -49,7 +54,7 @@
         <div class="adding-post__input-file-container form__input-container form__input-container--file">
             <div class="adding-post__input-file-wrapper form__input-file-wrapper">
                 <div class="adding-post__file-zone adding-post__file-zone--photo form__file-zone dropzone">
-                    <input class="adding-post__input-file form__input-file" id="userpic-file-photo" type="file" name="userpic-file-photo" title=" ">
+                    <input class="adding-post__input-file form__input-file" id="file" type="file" name="file" title=" ">
                     <div class="form__file-zone-text">
                         <span>Перетащите фото сюда</span>
                     </div>
