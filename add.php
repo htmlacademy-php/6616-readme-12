@@ -19,7 +19,6 @@
         $link = isset($_POST['link-url']) ? htmlspecialchars($_POST['link-url']) : '';
         $video = isset($_POST['video-url']) ? htmlspecialchars($_POST['video-url']) : '';
         $file = $_FILES['file'] ?? '';
-        $image = '';
         $tags = [];
         $userId = '2';
         $typeId = $_POST['typeId'];
