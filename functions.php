@@ -377,7 +377,9 @@
             $postTagsIds[] = $tagId;
         }
 
-        $sqlTagsPostsCon = 'INSERT INTO post_hashtag (post_id, hashtag_id) VALUES ' . implode(',', $insertTagsPosts);
+        $insertTagsPostsImplode = implode(',', $insertTagsPosts);
+
+        $sqlTagsPostsCon = 'INSERT INTO post_hashtag (post_id, hashtag_id) VALUES ' . $insertTagsPostsImplode;
 
         return mysqli_stmt_execute(db_get_prepare_stmt($connection, $sqlTagsPostsCon, $postTagsIds));
     }
