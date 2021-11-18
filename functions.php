@@ -331,57 +331,53 @@
      */
     function insertTags($tags, $postId, $connection): bool
     {
-        if (count($tags) !== 0) {
-            $tagsIds = [];
-            $oldTags = getTags($connection);
+        $tagsIds = [];
+        $oldTags = getTags($connection);
 
-            foreach ($oldTags as $oldTag) {
-                if (in_array($oldTag['name'], $tags)) {
-                    $key = array_search($oldTag['name'], $tags);
-                    $tagsIds[] = intval($oldTag['id']);
-                    unset($tags[$key]);
-                }
+        foreach ($oldTags as $oldTag) {
+            if (in_array($oldTag['name'], $tags)) {
+                $key = array_search($oldTag['name'], $tags);
+                $tagsIds[] = intval($oldTag['id']);
+                unset($tags[$key]);
             }
-
-            if (count($tags) !== 0) {
-                $insertTags = [];
-                $addedTags = [];
-
-                for ($i = 0; $i < count($tags); $i++) {
-                    $insertTags[] = '(?)';
-                    $addedTags[] = '?';
-                }
-
-                $insertTagsImplode = implode(',', $insertTags);
-                $addedTagsImplode = implode(',', $addedTags);
-
-                $insertTagsSql = 'INSERT INTO hashtag (name) VALUES ' . $insertTagsImplode;
-                mysqli_stmt_execute(db_get_prepare_stmt($connection, $insertTagsSql, $tags));
-
-                $addedTagsSql = 'SELECT id, name FROM hashtag WHERE name IN (' . $addedTagsImplode . ')';
-                $stmt = db_get_prepare_stmt($connection, $addedTagsSql, $tags);
-                mysqli_stmt_execute($stmt);
-                $addedTagsResult = mysqli_stmt_get_result($stmt);
-                $addedTagsList = mysqli_fetch_all($addedTagsResult, MYSQLI_ASSOC);
-
-                foreach ($addedTagsList as $addedTag) {
-                    $tagsIds[] = $addedTag['id'];
-                }
-            }
-
-            $insertTagsPosts = [];
-            $postTagsIds = [];
-
-            foreach ($tagsIds as $tagId) {
-                $insertTagsPosts[] = '(? , ?)';
-                $postTagsIds[] = $postId;
-                $postTagsIds[] = $tagId;
-            }
-
-            $sqlTagsPostsCon = 'INSERT INTO post_hashtag (post_id, hashtag_id) VALUES ' . implode(',', $insertTagsPosts);
-
-            return mysqli_stmt_execute(db_get_prepare_stmt($connection, $sqlTagsPostsCon, $postTagsIds));
         }
 
-        return false;
+        if (count($tags) > 0) {
+            $insertTags = [];
+            $addedTags = [];
+
+            for ($i = 0; $i < count($tags); $i++) {
+                $insertTags[] = '(?)';
+                $addedTags[] = '?';
+            }
+
+            $insertTagsImplode = implode(',', $insertTags);
+            $addedTagsImplode = implode(',', $addedTags);
+
+            $insertTagsSql = 'INSERT INTO hashtag (name) VALUES ' . $insertTagsImplode;
+            mysqli_stmt_execute(db_get_prepare_stmt($connection, $insertTagsSql, $tags));
+
+            $addedTagsSql = 'SELECT id, name FROM hashtag WHERE name IN (' . $addedTagsImplode . ')';
+            $stmt = db_get_prepare_stmt($connection, $addedTagsSql, $tags);
+            mysqli_stmt_execute($stmt);
+            $addedTagsResult = mysqli_stmt_get_result($stmt);
+            $addedTagsList = mysqli_fetch_all($addedTagsResult, MYSQLI_ASSOC);
+
+            foreach ($addedTagsList as $addedTag) {
+                $tagsIds[] = $addedTag['id'];
+            }
+        }
+
+        $insertTagsPosts = [];
+        $postTagsIds = [];
+
+        foreach ($tagsIds as $tagId) {
+            $insertTagsPosts[] = '(? , ?)';
+            $postTagsIds[] = $postId;
+            $postTagsIds[] = $tagId;
+        }
+
+        $sqlTagsPostsCon = 'INSERT INTO post_hashtag (post_id, hashtag_id) VALUES ' . implode(',', $insertTagsPosts);
+
+        return mysqli_stmt_execute(db_get_prepare_stmt($connection, $sqlTagsPostsCon, $postTagsIds));
     }
