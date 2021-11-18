@@ -347,7 +347,7 @@
                 $insertTags = [];
                 $addedTags = [];
 
-                foreach ($tags as $tag) {
+                for ($i = 0; $i < count($tags); $i++) {
                     $insertTags[] = '(?)';
                     $addedTags[] = '?';
                 }
