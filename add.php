@@ -76,10 +76,7 @@
 
             if ($result) {
                 $newPostId = mysqli_insert_id($connection);
-
-                if (count($tags) > 0) {
-                    insertTags($tags, $newPostId, $connection);
-                }
+                $tagsResult = count($tags) > 0 && insertTags($tags, $newPostId, $connection);
 
                 header('Location: post.php?id=' . $newPostId);
             } else {
