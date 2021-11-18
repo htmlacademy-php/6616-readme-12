@@ -67,7 +67,7 @@
         $errors = array_filter($errors);
 
         if (count($errors) === 0) {
-            $image = getUploadImagePath($file, $photo);
+            $image = addImageToPost($file, $photo);
 
             $sqlPost = 'INSERT INTO post (title, content, quote_author, image, video, link, user_id, content_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
 
@@ -76,7 +76,7 @@
 
             if ($result) {
                 $newPostId = mysqli_insert_id($connection);
-                $tagsResult = count($tags) > 0 && insertTags($tags, $newPostId, $connection);
+                $tagsResult = count($tags) > 0 && addTagsToPost($tags, $newPostId, $connection);
 
                 header('Location: post.php?id=' . $newPostId);
             } else {

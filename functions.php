@@ -300,7 +300,7 @@
      *
      * @return string
      */
-    function getUploadImagePath($file, $link): string
+    function addImageToPost($file, $link): string
     {
         $path = '';
 
@@ -329,7 +329,7 @@
      *
      * @return bool
      */
-    function insertTags($tags, $postId, $connection): bool
+    function addTagsToPost($tags, $postId, $connection): bool
     {
         $tagsIds = [];
         $oldTags = getTags($connection);
