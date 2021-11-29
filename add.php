@@ -1,100 +1,202 @@
 <?php
-    require_once('config.php');
-    require_once('helpers.php');
-    require_once('functions.php');
-    require_once('validation.php');
+    require_once('functions/bootstrap.php');
+    require_once('functions/validation.php');
+    require_once('functions/add-post.php');
+    require_once('model/types.php');
+    require_once('model/posts.php');
+    require_once('model/hashtags.php');
 
-    $tabTypeId = filter_input(INPUT_GET, 'type_id', FILTER_SANITIZE_NUMBER_INT) ?? 1;
+    /**
+     * @var $connection
+     * @var $add_post_forms
+     */
 
-    $connection = getConnection(DBHOST, DBUSER, DBPASSWORD, DBNAME);
-    $contentTypes = getContentTypes($connection);
+    $tab_type_id = filter_input(INPUT_GET, 'type_id', FILTER_SANITIZE_NUMBER_INT) ?? 1;
 
+    $content_types = get_content_types($connection);
+
+    $form_data = $_POST ?? null;
     $errors = [];
 
-    if (count($_POST) > 0) {
-        $title = isset($_POST['heading']) ? htmlspecialchars($_POST['heading']) : '';
-        $text = isset($_POST['text']) ? htmlspecialchars($_POST['text']) : '';
-        $author = isset($_POST['author']) ? htmlspecialchars($_POST['author']) : '';
-        $photo = isset($_POST['photo-url']) ? htmlspecialchars($_POST['photo-url']) : '';
-        $link = isset($_POST['link-url']) ? htmlspecialchars($_POST['link-url']) : '';
-        $video = isset($_POST['video-url']) ? htmlspecialchars($_POST['video-url']) : '';
-        $file = $_FILES['file'] ?? '';
-        $tags = [];
-        $userId = '2';
-        $typeId = $_POST['typeId'];
+    $add_post_forms = [
+        'text' => [
+            'fields' => [
+                'post-heading' => [
+                    'type' => 'text',
+                    'title' => 'Заголовок',
+                    'placeholder' => 'Введите заголовок',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-text' => [
+                    'type' => 'textarea',
+                    'title' => 'Текст поста',
+                    'placeholder' => '',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-tags' => [
+                    'type' => 'text',
+                    'title' => 'Теги',
+                    'placeholder' => 'Введите теги',
+                    'required' => false,
+                    'validate_rule' => 'validate_tags',
+                ],
+            ],
+        ],
+        'quote' => [
+            'fields' => [
+                'post-heading' => [
+                    'type' => 'text',
+                    'title' => 'Заголовок',
+                    'placeholder' => 'Введите заголовок',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-quote-text' => [
+                    'type' => 'textarea',
+                    'title' => 'Текст цитаты',
+                    'placeholder' => '',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-quote-author' => [
+                    'type' => 'text',
+                    'title' => 'Автор',
+                    'placeholder' => 'Укажите автора',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-tags' => [
+                    'type' => 'text',
+                    'title' => 'Теги',
+                    'placeholder' => 'Введите теги',
+                    'required' => false,
+                    'validate_rule' => 'validate_tags',
+                ],
+            ],
+        ],
+        'photo' => [
+            'fields' => [
+                'post-heading' => [
+                    'type' => 'text',
+                    'title' => 'Заголовок',
+                    'placeholder' => 'Введите заголовок',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-photo-url' => [
+                    'type' => 'text',
+                    'title' => 'Ссылка из интернета',
+                    'placeholder' => '',
+                    'required' => false,
+                    'validate_rule' => 'validate_photo_url',
+                ],
+                'post-tags' => [
+                    'type' => 'text',
+                    'title' => 'Теги',
+                    'placeholder' => 'Введите теги',
+                    'required' => false,
+                    'validate_rule' => 'validate_tags',
+                ],
+            ],
+        ],
+        'video' => [
+            'fields' => [
+                'post-heading' => [
+                    'type' => 'text',
+                    'title' => 'Заголовок',
+                    'placeholder' => 'Введите заголовок',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-video-url' => [
+                    'type' => 'text',
+                    'title' => 'Ссылка Youtube',
+                    'placeholder' => '',
+                    'required' => true,
+                    'validate_rule' => 'validate_video_url',
+                ],
+                'post-tags' => [
+                    'type' => 'text',
+                    'title' => 'Теги',
+                    'placeholder' => 'Введите теги',
+                    'required' => false,
+                    'validate_rule' => 'validate_tags',
+                ],
+            ],
+        ],
+        'link' => [
+            'fields' => [
+                'post-heading' => [
+                    'type' => 'text',
+                    'title' => 'Заголовок',
+                    'placeholder' => 'Введите заголовок',
+                    'required' => true,
+                    'validate_rule' => 'validate_filled',
+                ],
+                'post-link' => [
+                    'type' => 'text',
+                    'title' => 'Ссылка',
+                    'placeholder' => '',
+                    'required' => true,
+                    'validate_rule' => 'validate_url',
+                ],
+                'post-tags' => [
+                    'type' => 'text',
+                    'title' => 'Теги',
+                    'placeholder' => 'Введите теги',
+                    'required' => false,
+                    'validate_rule' => 'validate_tags',
+                ],
+            ],
+        ],
+    ];
 
-        $rules = [
-            'heading' => function ($value) {
-                return validateFilled($value);
-            },
-            'author' => function ($value) {
-                return validateFilled($value);
-            },
-            'text' => function ($value) {
-                return validateFilled($value);
-            },
-            'link-url' => function ($value) {
-                return validateUrl($value);
-            },
-            'photo-url' => function ($value) {
-                return validatePhotoUrl($value);
-            },
-            'video-url' => function ($value) {
-                return validateVideoUrl($value);
-            },
-            'tags' => function ($value) {
-                return validateTags($value);
-            },
-        ];
+    if (count($form_data)) {
+        $user_id = 1;
+        $post_file = $_FILES['post-file-photo'] ?? '';
+        $exploded_tags = explode(' ', $form_data['post-tags']);
+        $post_tags = array_diff($exploded_tags, ['']);
+        $post_text_content = $form_data['post-text'] ?? $form_data['post-quote-text'];
+        $post_type_class = $form_data['type-class'];
 
-        foreach ($_POST as $key => $value) {
-            if (isset($rules[$key])) {
-                $rule = $rules[$key];
-                $errors[$key] = $rule($value);
-            }
+        // Получаем ошибки формы
+        $errors = array_filter(get_post_form_errors($form_data, $post_file, $add_post_forms, $post_type_class));
 
-            if ($key === 'tags' && !empty($value)) {
-                $tagsArray = explode(' ', $value);
-                $tags = array_diff($tagsArray, []);
-            }
-        }
+        if (!count($errors)) {
+            // Получаем изображение из формы
+            $upload_image_path = get_upload_image_path($post_file, $form_data['post-photo-url']);
 
-        if (!empty($file['name'])) {
-            $errors['file'] = validateFile($file['tmp_name']);
-        }
+            // Добавляем пост и получает результат
+            $post_add_result = add_post($connection, $form_data['post-heading'], $post_text_content, $form_data['post-quote-author'],
+                $upload_image_path, $form_data['post-video-url'], $form_data['post-link'], $user_id, $form_data['type-id']);
 
-        $errors = array_filter($errors);
+            if ($post_add_result) {
+                // Получаем id нового поста
+                $post_id = mysqli_insert_id($connection);
+                // Добавляем теги и получаем результат
+                $tags_add_result = count($post_tags) > 0 && get_post_tags_result($connection, $post_tags, $post_id);
 
-        if (count($errors) === 0) {
-            $image = addImageToPost($file, $photo);
-
-            $sqlPost = 'INSERT INTO post (title, content, quote_author, image, video, link, user_id, content_type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
-
-            $result = mysqli_stmt_execute(db_get_prepare_stmt($connection, $sqlPost,
-                [$title, $text, $author, $image, $video, $link, $userId, $typeId]));
-
-            if ($result) {
-                $newPostId = mysqli_insert_id($connection);
-                $tagsResult = count($tags) > 0 && addTagsToPost($tags, $newPostId, $connection);
-
-                header('Location: post.php?id=' . $newPostId);
+                header('Location: post.php?id=' . $post_id);
             } else {
                 $errors[] = 'Ошибка на сервере. Не удалось сохранить пост';
             }
         }
     }
 
-    $pageContent = include_template('add/main.php', [
-        'contentTypes' => $contentTypes,
-        'tabTypeId' => $tabTypeId,
+    $page_content = include_template('add/main.php', [
+        'content_types' => $content_types,
+        'tab_type_id' => $tab_type_id,
+        'forms' => $add_post_forms,
         'errors' => $errors,
     ]);
 
-    $pageLayout = include_template('add/layout.php', [
-        'pageContent' => $pageContent,
-        'pageTitle' => 'readme: добавление публикации',
-        'isAuth' => rand(0, 1),
-        'userName' => 'Алексей Зубарев',
+    $page_layout = include_template('add/layout.php', [
+        'page_content' => $page_content,
+        'page_title' => 'readme: добавление публикации',
+        'is_auth' => 1,
+        'user_name' => 'Алексей Зубарев',
     ]);
 
-    print($pageLayout);
+    print($page_layout);

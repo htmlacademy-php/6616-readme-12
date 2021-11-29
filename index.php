@@ -1,26 +1,27 @@
 <?php
-    require_once('config.php');
-    require_once('helpers.php');
-    require_once('functions.php');
+    require_once('functions/bootstrap.php');
+    require_once('model/types.php');
+    require_once('model/posts.php');
 
-    $filterTypeId = filter_input(INPUT_GET, 'type_id', FILTER_SANITIZE_NUMBER_INT) ?? 0;
+    /** @var $connection */
 
-    $connection = getConnection(DBHOST, DBUSER, DBPASSWORD, DBNAME);
-    $posts = getPosts($connection, $filterTypeId);
-    $contentTypes = getContentTypes($connection);
+    $filter_type_id = filter_input(INPUT_GET, 'type_id', FILTER_SANITIZE_NUMBER_INT) ?? 0;
+    $content_types = get_content_types($connection);
+    $posts = get_posts($connection, $filter_type_id);
 
-    $pageContent = include_template('popular/main.php', [
+    $page_content = include_template('popular/main.php', [
         'connection' => $connection,
         'posts' => $posts,
-        'contentTypes' => $contentTypes,
-        'filterTypeId' => $filterTypeId,
+        'content_types' => $content_types,
+        'filter_type_id' => $filter_type_id,
     ]);
 
-    $pageLayout = include_template('popular/layout.php', [
-        'pageContent' => $pageContent,
-        'pageTitle' => 'readme: популярное',
-        'isAuth' => rand(0, 1),
-        'userName' => 'Алексей Зубарев',
+    $page_layout = include_template('popular/layout.php', [
+        'page_content' => $page_content,
+        'page_title' => 'readme: популярное',
+        'is_auth' => 1,
+        'user_name' => 'Алексей Зубарев',
     ]);
 
-    print($pageLayout);
+    print($page_layout);
+
