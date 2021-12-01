@@ -1,29 +1,30 @@
 <?php
-    require_once('config.php');
-    require_once('helpers.php');
-    require_once('functions.php');
+    require_once('functions/bootstrap.php');
+    require_once('model/comments.php');
+    require_once('model/posts.php');
 
-    $postId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0;
+    /** @var $connection */
 
-    $connection = getConnection(DBHOST, DBUSER, DBPASSWORD, DBNAME);
-    $post = getPost($connection, $postId);
+    $post_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0;
 
-    if ( !$post) {
+    $post = get_post($connection, $post_id);
+
+    if (!$post) {
         http_response_code(404);
     } else {
-        $postComments = getPostComments($connection, $post[ 'id' ]);
+        $post_comments = get_post_comments($connection, $post['id']);
 
-        $pageContent = include_template('post/main.php', [
+        $page_content = include_template('post/main.php', [
             'post' => $post,
-            'postComments' => $postComments,
+            'post_comments' => $post_comments,
         ]);
 
-        $pageLayout = include_template('post/layout.php', [
-            'pageContent' => $pageContent,
-            'pageTitle' => 'readme: публикация',
-            'isAuth' => rand(0, 1),
-            'userName' => 'Алексей Зубарев',
+        $page_layout = include_template('post/layout.php', [
+            'page_content' => $page_content,
+            'page_title' => 'readme: публикация',
+            'is_auth' => 1,
+            'user_name' => 'Алексей Зубарев',
         ]);
 
-        print($pageLayout);
+        print($page_layout);
     }
